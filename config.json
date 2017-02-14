@@ -1,0 +1,10 @@
+{"input files": [
+        "sample.fastq.gz"
+    ],
+    "barcode start": 1,
+    "barcode end": 4,
+    "sequence start": 5,
+    "sequence end": 9,
+    "quality threshold": 25,
+    "quality percent": 80
+}
