@@ -5,19 +5,18 @@ import (
     "encoding/json"
     "io/ioutil"
     "mds/utils"
-    "sync"
-    //"fmt"
+    //"sync"
+    "fmt"
 )
 
 type Config struct {
-    Lock sync.Mutex
+    Barcodes []string `json:"barcodes"`
 	InputFiles []string `json:"input files"`
     BarcodeStart int `json:"barcode start"`
     BarcodeEnd int `json:"barcode end"`
     SequenceStart int `json:"sequence start"`
     SequenceEnd int `json:"sequence end"`
-    Outputfiles []File
-    Barcodes stringslice //this is absolutely the worst! I actually just want to be able to access the lock within a map that links barcode to file+lock, but I can't because of restrictions talking to objects from a pointer to a map
+    Outputfiles map[string]File
 }
 
 type stringslice []string
@@ -41,16 +40,26 @@ func (s stringslice ) Index(item string) int {
 }
 type File struct {
     F *os.File
-    L sync.Mutex
+    C chan []byte
 }
 
 type ConfigParser func(data []byte) Config
 
 func ParseJSON(data []byte) Config {
-    res :=Config{}
+    res :=Config{Outputfiles:make(map[string]File)}
     err := json.Unmarshal(data, &res)
     utils.Checkerr(err)
+    PopulateBarcodes(&res)
     return res
+}
+
+func PopulateBarcodes(c *Config){
+    for _, barcode := range(c.Barcodes){
+        fmt.Println(barcode)
+        f, err :=os.OpenFile(utils.ReverseComplement(barcode)+"_output.fastq", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
+        utils.Checkerr(err)
+        c.Outputfiles[barcode] = File{F:f, C:make(chan []byte)}
+    }
 }
 
 func ReadConfig(filename string) (Config) {

@@ -1,10 +1,11 @@
 {"input files": [
-        "sample.fastq.gz"
+        "first10000.fastq.gz"
     ],
-    "barcode start": 1,
-    "barcode end": 4,
-    "sequence start": 5,
-    "sequence end": 9,
+    "barcodes":["AACC","CCGG","TCCG","ACAA","GCCA","TGCC"],
+    "barcode start": 3,
+    "barcode end": 6,
+    "sequence start": 9,
+    "sequence end": 51,
     "quality threshold": 25,
     "quality percent": 80
 }
