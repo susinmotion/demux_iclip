@@ -56,9 +56,9 @@ func ParseJSON(data []byte) Config {
 func PopulateBarcodes(c *Config){
     for _, barcode := range(c.Barcodes){
         fmt.Println(barcode)
-        f, err :=os.OpenFile(utils.ReverseComplement(barcode)+"_output.fastq", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
+        f, err :=os.OpenFile(barcode+"_output.fastq", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
         utils.Checkerr(err)
-        c.Outputfiles[barcode] = File{F:f, C:make(chan []byte)}
+        c.Outputfiles[utils.ReverseComplement(barcode)] = File{F:f, C:make(chan []byte)}
     }
 }
 
