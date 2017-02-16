@@ -3,9 +3,13 @@ package main
 import "iclip/config"
 import "iclip/parse"
 import "fmt"
+import "time"
+import "mds/utils"
 
 func main(){
-	c := config.ReadConfig("/Users/SusanSteinman/Documents/go/src/iclip/config.json")
+	start := time.Now()
+    defer utils.PrintTime(start)
+	c := config.ReadConfig("config.json")
 	fmt.Println(c)
 	for i := 0; i<len(c.InputFiles); i++{
 		fmt.Println("hi")

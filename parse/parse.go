@@ -49,12 +49,14 @@ func Parse(wg *sync.WaitGroup, lines [4]string, metadata *config.Config){
 	_, ok := metadata.Outputfiles[barcode]
 	if ok{
 		//0 based AATTTTA if we wnated ts it would be start=2 end=5
-		lines[1] = lines[1][metadata.SequenceStart:metadata.SequenceEnd+1]
-		lines[3] = lines[3][metadata.SequenceStart:metadata.SequenceEnd+1]
-		go func(){
-			metadata.Outputfiles[barcode].C <- []byte(strings.Join(lines[:], "\n")+"\n")
-			}()
-		metadata.Outputfiles[barcode].F.Write(<-metadata.Outputfiles[barcode].C)
+		if len(lines[1])>metadata.SequenceEnd{
+				lines[1] = lines[1][metadata.SequenceStart:metadata.SequenceEnd+1]
+				lines[3] = lines[3][metadata.SequenceStart:metadata.SequenceEnd+1]
+				go func(){
+					metadata.Outputfiles[barcode].C <- []byte(strings.Join(lines[:], "\n")+"\n")
+					}()
+				metadata.Outputfiles[barcode].F.Write(<-metadata.Outputfiles[barcode].C)
+		}
 	}
 }
 
