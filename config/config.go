@@ -49,23 +49,23 @@ func ParseJSON(data []byte) Config {
     res :=Config{Outputfiles:make(map[string]File)}
     err := json.Unmarshal(data, &res)
     utils.Checkerr(err)
-    PopulateBarcodes(&res)
     return res
 }
 
-func PopulateBarcodes(c *Config){
+func PopulateBarcodes(c *Config, outputdir string){
     for _, barcode := range(c.Barcodes){
-        fmt.Println(barcode)
-        f, err :=os.OpenFile(barcode+"_output.fastq", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
+        f, err :=os.OpenFile(outputdir+"/"+barcode+"_output.fastq", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
         utils.Checkerr(err)
         c.Outputfiles[utils.ReverseComplement(barcode)] = File{F:f, C:make(chan []byte)}
     }
 }
 
-func ReadConfig(filename string) (Config) {
+func ReadConfig(filename string, outputdir string) (Config) {
     var parser ConfigParser = ParseJSON
     data, err := ioutil.ReadFile(filename)
     utils.CheckConfig(err, filename)
     parser = ParseJSON
-    return parser(data)
+    p := parser(data)
+    PopulateBarcodes(&p, outputdir)
+    return p
 }
